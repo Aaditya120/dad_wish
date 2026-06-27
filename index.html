@@ -4590,8 +4590,8 @@ body {
     const currentMonth = now.getMonth();
     const currentDay = now.getDate();
     
-    // Create target date: June 28th at 23:59:59
-    let targetDate = new Date(currentYear, 5, 28, 23, 59, 59);
+    // Create target date: June 28th at 00:00:00 (start of birthday)
+    let targetDate = new Date(currentYear, 5, 28, 0, 0, 0);
 
     // If June 28th has already passed this year, set to next year
     if (now > targetDate) {
