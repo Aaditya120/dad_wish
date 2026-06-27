@@ -1889,21 +1889,25 @@
             background: linear-gradient(160deg, #1a0a05 0%, #2d1206 50%, #1a0a05 100%);
         }
         .video-section-title { color: #C9954C !important; }
-        .video-outer { max-width: 860px; margin: 0 auto; }
-        .video-player-area { position: relative; margin-bottom: 20px; }
-        .video-wrapper {
+        .video-slider-wrap {
+            max-width: 860px;
+            margin: 0 auto;
             position: relative;
+        }
+        .video-slide-player {
             width: 100%;
             aspect-ratio: 16 / 9;
             background: #0d0d0d;
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            position: relative;
         }
-        .video-wrapper video, .video-wrapper iframe {
+        .video-slide-player video {
             width: 100%; height: 100%;
-            border: none; border-radius: 16px;
             display: block;
+            object-fit: contain;
+            background: #000;
         }
         .video-placeholder-msg {
             position: absolute; inset: 0;
@@ -1913,31 +1917,47 @@
         }
         .video-placeholder-msg span { font-size: 3rem; }
         .video-placeholder-msg p { font-size: 0.9rem; line-height: 1.6; }
-        .video-caption-text {
-            color: #C9954C; font-style: italic;
-            margin-top: 14px; font-size: 1rem;
+        .video-slider-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 20px;
         }
-        .video-tabs {
-            display: flex; flex-wrap: wrap;
-            gap: 10px; justify-content: center;
-            margin-top: 8px;
-        }
-        .video-tab-btn {
-            padding: 10px 20px;
+        .vid-arrow {
             background: rgba(201,149,76,0.15);
-            border: 2px solid rgba(201,149,76,0.3);
-            border-radius: 30px; color: #C9954C;
-            cursor: pointer; font-size: 0.9rem;
-            transition: all 0.25s;
+            border: 2px solid rgba(201,149,76,0.4);
+            color: #C9954C;
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
         }
-        .video-tab-btn:hover, .video-tab-btn.active {
+        .vid-arrow:hover {
             background: #C9954C; color: #fff;
-            border-color: #C9954C;
-            box-shadow: 0 4px 16px rgba(201,149,76,0.35);
+            box-shadow: 0 4px 16px rgba(201,149,76,0.4);
+        }
+        .vid-arrow:disabled { opacity: 0.3; cursor: default; }
+        .video-dots {
+            display: flex; gap: 8px;
+            align-items: center; justify-content: center;
+        }
+        .video-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: rgba(201,149,76,0.3);
+            border: none; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .video-dot.active {
+            background: #C9954C;
+            transform: scale(1.3);
+            box-shadow: 0 0 8px rgba(201,149,76,0.6);
         }
         @media (max-width: 600px) {
             .video-section { padding: 50px 12px; }
-            .video-tab-btn { padding: 8px 14px; font-size: 0.8rem; }
         }
 
         /* Responsive Adjustments */
@@ -2373,81 +2393,126 @@
 
         /* ── Revamped Wishes Section ──────────────────────────────────── */
         .wishes-section {
-            padding: 80px 20px;
-            background: linear-gradient(160deg, #3d1a08 0%, #5C3317 50%, #3d1a08 100%);
+            padding: 90px 20px 80px;
+            background: linear-gradient(160deg, #1e0a02 0%, #3d1a08 40%, #5C3317 70%, #3d1a08 100%);
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .wishes-section::before {
+            content: '💌';
+            position: absolute; top: 30px; left: 50%;
+            transform: translateX(-50%);
+            font-size: 2.5rem; opacity: 0.12;
+            pointer-events: none;
         }
         .wishes-subtitle {
-            color: rgba(255,255,255,0.7); margin: -20px 0 40px;
-            font-size: 1rem;
+            color: rgba(255,255,255,0.6);
+            margin: -16px 0 44px;
+            font-size: 1rem; letter-spacing: 0.02em;
         }
+
+        /* ── Form card ── */
         .wish-form-card {
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(201,149,76,0.3);
-            border-radius: 20px; padding: 28px 24px;
-            max-width: 620px; margin: 0 auto 48px;
-            backdrop-filter: blur(10px);
+            background: rgba(20,8,2,0.55);
+            border: 1px solid rgba(201,149,76,0.4);
+            border-radius: 24px;
+            padding: 32px 28px;
+            max-width: 580px; margin: 0 auto 52px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 8px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(201,149,76,0.15);
         }
-        .wish-name-input, .wish-text-input {
+        .wish-field-group {
+            position: relative; margin-bottom: 14px;
+        }
+        .wish-field-icon {
+            position: absolute; left: 14px; top: 50%;
+            transform: translateY(-50%);
+            color: rgba(201,149,76,0.5); font-size: 0.9rem;
+            pointer-events: none;
+        }
+        .wish-name-input {
             width: 100%; box-sizing: border-box;
-            background: rgba(255,255,255,0.08);
-            border: 1.5px solid rgba(201,149,76,0.35);
-            border-radius: 12px; color: #fff;
-            padding: 12px 16px; font-size: 0.95rem;
-            outline: none; transition: border-color 0.2s;
+            background: rgba(255,255,255,0.06);
+            border: 1.5px solid rgba(201,149,76,0.3);
+            border-radius: 14px; color: #fff;
+            padding: 13px 16px 13px 40px;
+            font-size: 0.95rem; outline: none;
+            transition: border-color 0.25s, box-shadow 0.25s;
         }
-        .wish-name-input { margin-bottom: 12px; }
-        .wish-name-input:focus, .wish-text-input:focus {
+        .wish-textarea {
+            width: 100%; box-sizing: border-box;
+            background: rgba(255,255,255,0.06);
+            border: 1.5px solid rgba(201,149,76,0.3);
+            border-radius: 14px; color: #fff;
+            padding: 13px 16px; font-size: 0.95rem;
+            outline: none; resize: none; height: 90px;
+            font-family: inherit; line-height: 1.5;
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+        .wish-name-input:focus, .wish-textarea:focus {
             border-color: #C9954C;
+            box-shadow: 0 0 0 3px rgba(201,149,76,0.15);
         }
-        .wish-name-input::placeholder, .wish-text-input::placeholder { color: rgba(255,255,255,0.4); }
-        .wish-input-row {
-            display: flex; gap: 10px; margin-bottom: 14px;
+        .wish-name-input::placeholder, .wish-textarea::placeholder {
+            color: rgba(255,255,255,0.35);
         }
-        .wish-input-row .wish-text-input { flex: 1; }
+
+        /* ── Vibe selector ── */
+        .wish-vibe-label {
+            font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
+            color: rgba(201,149,76,0.7); margin: 16px 0 10px; text-align: left;
+        }
+        .wish-vibe-row {
+            display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
+        }
+        .wish-effect-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1.5px solid rgba(201,149,76,0.2);
+            border-radius: 30px;
+            padding: 7px 16px;
+            font-size: 1rem; cursor: pointer;
+            transition: all 0.2s; color: rgba(255,255,255,0.7);
+            display: flex; align-items: center; gap: 6px;
+            font-family: inherit;
+        }
+        .wish-effect-btn span { font-size: 0.8rem; }
+        .wish-effect-btn.active, .wish-effect-btn:hover {
+            background: rgba(201,149,76,0.2);
+            border-color: #C9954C; color: #fff;
+            box-shadow: 0 0 14px rgba(201,149,76,0.3);
+            transform: translateY(-1px);
+        }
+
+        /* ── Submit button ── */
         .wish-submit-btn {
-            background: linear-gradient(135deg, #C9954C, #8B5E3C);
-            border: none; border-radius: 12px;
-            color: #fff; padding: 12px 20px;
-            font-size: 0.95rem; cursor: pointer;
-            display: flex; align-items: center; gap: 8px;
-            transition: all 0.25s; white-space: nowrap;
+            width: 100%;
+            background: linear-gradient(135deg, #C9954C 0%, #a06830 100%);
+            border: none; border-radius: 14px;
+            color: #fff; padding: 14px;
+            font-size: 1rem; font-weight: 600;
+            cursor: pointer; letter-spacing: 0.03em;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: all 0.25s;
+            box-shadow: 0 4px 20px rgba(201,149,76,0.3);
         }
         .wish-submit-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(201,149,76,0.45);
+            box-shadow: 0 8px 28px rgba(201,149,76,0.5);
         }
-        .wish-effect-row {
-            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-            margin-top: 4px;
-        }
-        .effect-label { color: rgba(255,255,255,0.5); font-size: 0.85rem; flex-basis: 100%; margin-bottom: 2px; }
-        .wish-effect-btn {
-            background: rgba(255,255,255,0.06);
-            border: 1.5px solid rgba(201,149,76,0.25);
-            border-radius: 50%; width: 42px; height: 42px;
-            font-size: 1.2rem; line-height: 1;
-            cursor: pointer; transition: all 0.2s;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-        }
-        .wish-effect-btn.active, .wish-effect-btn:hover {
-            background: rgba(201,149,76,0.35);
-            border-color: #C9954C;
-            transform: scale(1.15);
-            box-shadow: 0 0 12px rgba(201,149,76,0.4);
-        }
+        .wish-submit-btn:active { transform: translateY(0); }
         .wish-status {
-            margin-top: 10px; font-size: 0.85rem;
-            color: #C9954C; min-height: 18px;
+            margin-top: 12px; font-size: 0.85rem;
+            color: #C9954C; min-height: 18px; text-align: center;
         }
-        /* Feed */
+
+        /* ── Feed ── */
         .wishes-feed {
-            max-width: 720px; margin: 0 auto;
-            display: flex; flex-direction: column; gap: 16px;
+            max-width: 660px; margin: 0 auto;
+            display: flex; flex-direction: column; gap: 14px;
         }
         .wishes-loading {
-            color: rgba(255,255,255,0.5);
+            color: rgba(255,255,255,0.4);
             display: flex; flex-direction: column;
             align-items: center; gap: 12px; padding: 40px;
         }
@@ -2455,42 +2520,56 @@
             font-size: 2rem; color: #C9954C;
             animation: pulse 1.4s infinite;
         }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-        /* Wish card */
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+        /* ── Wish card ── */
         .wish-card {
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(201,149,76,0.2);
-            border-left: 4px solid #C9954C;
-            border-radius: 16px; padding: 18px 20px;
-            text-align: left; position: relative;
-            animation: slideUp 0.4s ease;
+            display: flex; gap: 14px; text-align: left;
+            animation: slideUp 0.45s cubic-bezier(0.22,1,0.36,1);
         }
-        @keyframes slideUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
+        @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+        .wish-avatar {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: linear-gradient(135deg, #C9954C, #8B5E3C);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; font-weight: 700; color: #fff;
+            flex-shrink: 0; box-shadow: 0 4px 12px rgba(201,149,76,0.3);
+        }
+        .wish-card-body {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(201,149,76,0.18);
+            border-radius: 0 16px 16px 16px;
+            padding: 14px 18px; flex: 1;
+            position: relative;
+        }
+        .wish-card-body::before {
+            content: '';
+            position: absolute; top: 14px; left: -8px;
+            border: 8px solid transparent;
+            border-right-color: rgba(255,255,255,0.06);
+        }
         .wish-card-header {
             display: flex; justify-content: space-between;
-            align-items: center; margin-bottom: 10px;
+            align-items: center; margin-bottom: 8px;
         }
         .wish-card-sender {
-            font-weight: 700; color: #C9954C; font-size: 0.95rem;
+            font-weight: 700; color: #C9954C;
+            font-size: 0.9rem; display: flex; align-items: center; gap: 6px;
         }
         .wish-card-time {
-            font-size: 0.75rem; color: rgba(255,255,255,0.35);
+            font-size: 0.72rem; color: rgba(255,255,255,0.3);
         }
         .wish-card-text {
-            color: rgba(255,255,255,0.88); font-size: 0.95rem;
-            line-height: 1.6;
-        }
-        .wish-card-effect {
-            font-size: 1.1rem; margin-right: 6px;
+            color: rgba(255,255,255,0.85); font-size: 0.93rem;
+            line-height: 1.65;
         }
         .wish-empty {
-            color: rgba(255,255,255,0.4); padding: 40px;
+            color: rgba(255,255,255,0.35); padding: 40px;
             font-size: 0.95rem;
         }
         @media (max-width: 600px) {
-            .wish-form-card { padding: 20px 14px; }
-            .wish-input-row { flex-direction: column; }
-            .wish-submit-btn { justify-content: center; }
+            .wish-form-card { padding: 22px 16px; }
+            .wish-effect-btn span { display: none; }
         }
         /* ── end wishes ─────────────────────────────────────────────────── */
 
@@ -4095,8 +4174,8 @@ body {
     </div>
 
     <!-- Audio elements -->
-    <audio id="bgMusic" loop preload="auto">
-        <source src="assests/sounds/Happy Birthday - Diljit Dosanjh.mp3" type="audio/mp3">
+    <audio id="bgMusic" preload="auto">
+        <source src="assests/sounds/Papa Meri Jaan Animal 320 Kbps.mp3" type="audio/mp3">
     </audio>
     <audio id="clickSound" preload="auto">
         <source src="assests/sounds/click-234708.mp3" type="audio/mp3">
@@ -4308,21 +4387,21 @@ body {
 
         <!-- Input card -->
         <div class="wish-form-card">
-            <input type="text" id="wishNameInput" class="wish-name-input" placeholder="Your name (e.g. Aaditya)" maxlength="30">
-            <div class="wish-input-row">
-                <input type="text" id="wishInput" class="wish-text-input" placeholder="Write a heartfelt message for Papa..." maxlength="280">
-                <button id="addWishBtn" class="wish-submit-btn">
-                    <i class="fas fa-paper-plane"></i>
-                    <span>Send</span>
-                </button>
+            <div class="wish-field-group">
+                <i class="fas fa-user wish-field-icon"></i>
+                <input type="text" id="wishNameInput" class="wish-name-input" placeholder="Your name" maxlength="30">
             </div>
-            <div class="wish-effect-row">
-                <span class="effect-label">Choose a vibe:</span>
-                <button class="wish-effect-btn active" data-effect="heart" title="Love">❤️</button>
-                <button class="wish-effect-btn" data-effect="sparkle" title="Sparkle">✨</button>
-                <button class="wish-effect-btn" data-effect="star" title="Star">⭐</button>
-                <button class="wish-effect-btn" data-effect="party" title="Party">🎉</button>
+            <textarea id="wishInput" class="wish-textarea" placeholder="Write a heartfelt message for Papa…" maxlength="280"></textarea>
+            <p class="wish-vibe-label">Choose a vibe</p>
+            <div class="wish-vibe-row">
+                <button class="wish-effect-btn active" data-effect="heart">❤️ <span>Love</span></button>
+                <button class="wish-effect-btn" data-effect="sparkle">✨ <span>Sparkle</span></button>
+                <button class="wish-effect-btn" data-effect="star">⭐ <span>Star</span></button>
+                <button class="wish-effect-btn" data-effect="party">🎉 <span>Celebrate</span></button>
             </div>
+            <button id="addWishBtn" class="wish-submit-btn">
+                <i class="fas fa-paper-plane"></i> Send to Papa
+            </button>
             <div id="wishStatus" class="wish-status"></div>
         </div>
 
@@ -4355,21 +4434,21 @@ body {
     </div>
 </section>
 
-    <!-- Video Memory Section -->
     <!-- Video Section -->
     <section class="video-section">
         <h2 class="section-title video-section-title">Special Moments, Papa 🎬</h2>
-        <div class="video-outer">
-            <div class="video-player-area">
-                <div class="video-wrapper" id="videoPlayerWrapper">
-                    <div class="video-placeholder-msg" id="videoPlaceholder">
-                        <span>🎬</span>
-                        <p>Drop video files in <strong>assests/videos/</strong><br>then update the PAPA_VIDEOS list in index.html</p>
-                    </div>
+        <div class="video-slider-wrap">
+            <div class="video-slide-player" id="videoSlidePlayer">
+                <div class="video-placeholder-msg" id="videoLoadingMsg">
+                    <span>🎬</span>
+                    <p>Loading videos...</p>
                 </div>
-                <p class="video-caption-text" id="videoCaption">Memories that last a lifetime ❤️</p>
             </div>
-            <div class="video-tabs" id="videoTabs"></div>
+            <div class="video-slider-controls" id="videoSliderControls" style="display:none">
+                <button class="vid-arrow" id="vidPrev">&#8249;</button>
+                <div class="video-dots" id="videoDots"></div>
+                <button class="vid-arrow" id="vidNext">&#8250;</button>
+            </div>
         </div>
     </section>
 
@@ -7527,63 +7606,113 @@ document.addEventListener('DOMContentLoaded', function() {
      <!-- Theme Toggle and Panel -->
 
     <script>
-    // ── VIDEO CONFIGURATION ─────────────────────────────────────────────────
-    // Add or remove entries below to control which videos appear.
-    // For a LOCAL file: type:'local', src:'assests/videos/filename.mp4'
-    // For YOUTUBE:      type:'youtube', videoId:'THE_11_CHAR_ID'
+    // ── VIDEO SECTION ────────────────────────────────────────────────────────
+    // Drop video1.mp4/.mov, video2.mp4/.mov … into assests/videos/ — auto-detected.
+    // Plays first 30 seconds only; shorter clips play to end then stop.
     // ────────────────────────────────────────────────────────────────────────
-    const PAPA_VIDEOS = [
-        { type: 'local',   src: 'assests/videos/video1.mp4', title: '🎂 Birthday Celebration', caption: 'A day to remember forever ❤️' },
-        { type: 'local',   src: 'assests/videos/video2.mp4', title: '📸 Family Moments',        caption: 'Our family — our greatest treasure' },
-        { type: 'local',   src: 'assests/videos/video3.mp4', title: '💫 Special Memories',      caption: 'Every moment with you is precious' },
-        // { type: 'youtube', videoId: 'PASTE_ID_HERE', title: '▶️ YouTube Video', caption: 'Caption here' },
-    ];
+    (async function initVideoSlider() {
+        const CLIP_LIMIT = 30; // seconds
+        const player   = document.getElementById('videoSlidePlayer');
+        const controls = document.getElementById('videoSliderControls');
+        const dotsWrap = document.getElementById('videoDots');
+        const prevBtn  = document.getElementById('vidPrev');
+        const nextBtn  = document.getElementById('vidNext');
+        if (!player) return;
 
-    (function initVideoPlayer() {
-        const wrapper = document.getElementById('videoPlayerWrapper');
-        const tabs    = document.getElementById('videoTabs');
-        const caption = document.getElementById('videoCaption');
-        if (!wrapper || !tabs) return;
-
-        function loadVideo(index) {
-            const v = PAPA_VIDEOS[index];
-            // clear
-            wrapper.innerHTML = '';
-            // build player
-            if (v.type === 'youtube') {
-                const iframe = document.createElement('iframe');
-                iframe.src = `https://www.youtube.com/embed/${v.videoId}?rel=0`;
-                iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-                iframe.allowFullscreen = true;
-                wrapper.appendChild(iframe);
-            } else {
-                const video = document.createElement('video');
-                video.controls = true;
-                video.playsInline = true;
-                video.innerHTML = `<source src="${v.src}" type="video/mp4">`;
-                video.onerror = () => {
-                    wrapper.innerHTML = `<div class="video-placeholder-msg"><span>🎬</span><p>Add <strong>${v.src}</strong> to show this video</p></div>`;
-                };
-                wrapper.appendChild(video);
+        // On HTTP/HTTPS (GitHub Pages): fast fetch. On file://: video-element probe.
+        const isLocal = location.protocol === 'file:';
+        function probe(src) {
+            if (!isLocal) {
+                return fetch(src, { method: 'HEAD' })
+                    .then(r => r.ok ? src : null)
+                    .catch(() => null);
             }
-            caption.textContent = v.caption;
-            // update tabs
-            tabs.querySelectorAll('.video-tab-btn').forEach((btn, i) => {
-                btn.classList.toggle('active', i === index);
+            return new Promise(resolve => {
+                const vid = document.createElement('video');
+                vid.preload = 'metadata';
+                const timer = setTimeout(() => { vid.src = ''; resolve(null); }, 500);
+                vid.onloadedmetadata = () => { clearTimeout(timer); vid.src = ''; resolve(src); };
+                vid.onerror          = () => { clearTimeout(timer); resolve(null); };
+                vid.src = src;
             });
         }
 
-        // build tabs
-        PAPA_VIDEOS.forEach((v, i) => {
-            const btn = document.createElement('button');
-            btn.className = 'video-tab-btn' + (i === 0 ? ' active' : '');
-            btn.textContent = v.title;
-            btn.addEventListener('click', () => loadVideo(i));
-            tabs.appendChild(btn);
+        // Probe video1–video20 for both .mp4 and .mov in parallel
+        const probes = [];
+        for (let i = 1; i <= 20; i++) {
+            for (const ext of ['mp4', 'mov']) {
+                probes.push(probe(`assests/videos/video${i}.${ext}`));
+            }
+        }
+        const rawFound = (await Promise.all(probes)).filter(Boolean);
+        const seen = new Set();
+        const found = rawFound.filter(src => {
+            const num = src.match(/video(\d+)\./)[1];
+            if (seen.has(num)) return false;
+            seen.add(num);
+            return true;
         });
 
-        // load first
-        loadVideo(0);
+        // Shuffle
+        found.sort(() => Math.random() - 0.5);
+
+        if (found.length === 0) {
+            player.innerHTML = `<div class="video-placeholder-msg"><span>🎬</span><p>Add <strong>video1.mp4</strong> or <strong>video1.mov</strong> to <strong>assests/videos/</strong></p></div>`;
+            return;
+        }
+
+        let current = 0;
+
+        found.forEach((_, i) => {
+            const dot = document.createElement('button');
+            dot.className = 'video-dot' + (i === 0 ? ' active' : '');
+            dot.addEventListener('click', () => show(i));
+            dotsWrap.appendChild(dot);
+        });
+
+        function show(index) {
+            current = (index + found.length) % found.length;
+            const old = player.querySelector('video');
+            if (old) { old.pause(); old.remove(); }
+
+            const src  = found[current];
+            const type = src.endsWith('.mov') ? 'video/quicktime' : 'video/mp4';
+
+            const vid = document.createElement('video');
+            vid.controls    = true;
+            vid.playsInline = true;
+            // Provide both source types so browsers pick what they can decode
+            vid.innerHTML = `
+                <source src="${src}" type="${type}">
+                <source src="${src}" type="video/mp4">
+            `;
+
+            // 30-second clip logic — stop at 30s and block scrubbing past it
+            function clamp30() {
+                if (this.duration > CLIP_LIMIT && this.currentTime >= CLIP_LIMIT) {
+                    this.currentTime = CLIP_LIMIT - 0.05;
+                    this.pause();
+                }
+            }
+            vid.addEventListener('timeupdate', clamp30);
+            vid.addEventListener('seeking',    clamp30);
+
+            player.appendChild(vid);
+
+            dotsWrap.querySelectorAll('.video-dot').forEach((d, i) =>
+                d.classList.toggle('active', i === current)
+            );
+            prevBtn.style.visibility = found.length > 1 ? 'visible' : 'hidden';
+            nextBtn.style.visibility = found.length > 1 ? 'visible' : 'hidden';
+        }
+
+        prevBtn.addEventListener('click', () => show(current - 1));
+        nextBtn.addEventListener('click', () => show(current + 1));
+
+        const loadingMsg = document.getElementById('videoLoadingMsg');
+        if (loadingMsg) loadingMsg.remove();
+        controls.style.display = 'flex';
+        show(0);
     })();
     </script>
 
@@ -7645,15 +7774,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         function renderCard(wish, prepend) {
+            const name   = wish.name || 'Anonymous';
+            const emoji  = EFFECT_EMOJI[wish.effect] || '❤️';
+            const initials = name.trim().split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
             const card = document.createElement('div');
             card.className = 'wish-card';
             card.innerHTML = `
-                <div class="wish-card-header">
-                    <span class="wish-card-sender">${wish.name || 'Anonymous'}</span>
-                    <span class="wish-card-time">${timeAgo(wish.timestamp)}</span>
-                </div>
-                <div class="wish-card-text">
-                    <span class="wish-card-effect">${EFFECT_EMOJI[wish.effect] || '❤️'}</span>${wish.text}
+                <div class="wish-avatar">${initials}</div>
+                <div class="wish-card-body">
+                    <div class="wish-card-header">
+                        <span class="wish-card-sender">${emoji} ${name}</span>
+                        <span class="wish-card-time">${timeAgo(wish.timestamp)}</span>
+                    </div>
+                    <div class="wish-card-text">${wish.text}</div>
                 </div>`;
             if (prepend && feed.firstChild) {
                 feed.insertBefore(card, feed.firstChild);
@@ -7765,26 +7898,22 @@ document.addEventListener('DOMContentLoaded', function() {
     <script>
     // ── MEMORY STARS CONFIG ──────────────────────────────────────────────
     const MEMORY_STARS_DATA = [
-        { photo: 'assests/images/IMG_0023.jpg',                              title: '✨ A Precious Moment',         caption: 'Every moment with you is a treasure, Papa ❤️',            x: 8,  y: 14 },
-        { photo: 'assests/images/IMG_0024.jpg',                              title: '🌟 Family Time',               caption: 'Our happiest times are the ones we spend together',         x: 22, y: 20 },
-        { photo: 'assests/images/IMG_0025.jpg',                              title: '💛 Your Smile',                caption: 'Your smile lights up every room you walk into',             x: 37, y: 10 },
-        { photo: 'assests/images/IMG_0026.jpg',                              title: '🎉 Celebrations',              caption: 'Every celebration is more beautiful because you are there',  x: 52, y: 17 },
-        { photo: 'assests/images/IMG_0057.jpg',                              title: '🌙 Our Star',                  caption: 'You have always been our guiding star, Papa',               x: 67, y: 12 },
-        { photo: 'assests/images/20240417_184818.jpg',                       title: '📸 A Day to Remember',         caption: 'Some days stay with us forever — this is one of them',      x: 82, y: 19 },
-        { photo: 'assests/images/IMG-20231101-WA0028.jpg',                   title: '🤗 Always There',              caption: 'You are always there when we need you most',                x: 15, y: 37 },
-        { photo: 'assests/images/WhatsApp Image 2025-03-25 at 16.54.46.jpeg',title: '💪 Our Strength',              caption: 'Your strength has carried our whole family',                x: 30, y: 44 },
-        { photo: 'assests/images/WhatsApp Image 2025-03-25 at 16.54.46 (1).jpeg', title: '❤️ Love Like Yours',     caption: 'A love this deep is the rarest gift',                       x: 47, y: 35 },
-        { photo: 'assests/images/WhatsApp Image 2025-03-25 at 16.54.47.jpeg',title: '🏡 Home Is You',              caption: 'Wherever you are, that is home for us',                     x: 63, y: 41 },
-        { photo: 'assests/images/WhatsApp Image 2025-03-25 at 16.54.47 (1).jpeg', title: '🌅 Every Morning',       caption: 'You made every morning brighter just by being there',       x: 78, y: 36 },
-        { photo: 'assests/images/WhatsApp Image 2025-03-25 at 16.54.48.jpeg',title: '🎵 Memories We Dance To',     caption: 'Some memories you do not remember — you feel them',         x: 92, y: 43 },
-        { photo: 'assests/images/WhatsApp Image 2025-03-25 at 16.54.48 (1).jpeg', title: '🌸 Gentle Moments',      caption: 'In your gentleness we found our peace',                     x: 7,  y: 60 },
-        { photo: 'assests/images/WhatsApp Image 2025-03-25 at 16.54.48 (2).jpeg', title: '⭐ Shining Example',      caption: 'Everything good in us, we learned from you',               x: 23, y: 67 },
-        { photo: 'assests/images/WhatsApp Image 2025-03-25 at 16.54.49.jpeg',title: '🎂 Special Days',             caption: 'You made every birthday feel like the most special day',    x: 40, y: 58 },
-        { photo: 'assests/images/WhatsApp Image 2025-03-25 at 16.54.49 (1).jpeg', title: '🌟 Our Biggest Fan',     caption: 'You believed in us before we believed in ourselves',        x: 57, y: 64 },
-        { photo: 'assests/images/WhatsApp Image 2025-03-25 at 16.54.49 (2).jpeg', title: '🤝 Side by Side',        caption: 'Through every storm you stood right beside us',             x: 72, y: 59 },
-        { photo: 'assests/images/WhatsApp Image 2025-03-25 at 16.54.50 (1).jpeg', title: '💫 Our Universe',        caption: 'You are the centre of everything that matters to us',       x: 87, y: 67 },
-        { photo: 'assests/images/WhatsApp Image 2025-03-15 at 20.50.26.jpeg',title: '🌙 Late Night Talks',         caption: 'The best conversations happened after midnight with you',    x: 35, y: 82 },
-        { photo: 'assests/images/Gemini_Generated_Image_nwtkw9nwtkw9nwtk.jpeg', title: '💝 Love Letter',           caption: 'This whole sky is a letter written just for you, Papa',     x: 65, y: 80 },
+        { photo: 'assests/images/IMG-20220627-WA0001.jpg',  title: '👶 Where It All Began',       caption: 'From your very first breath you held us like the whole world depended on it. That love has never changed.',   x: 8,  y: 14 },
+        { photo: 'assests/images/IMG-20240510-WA0036.jpg',  title: '❄️ Young & In Love',          caption: 'Long before we came along, Papa & Mumma were already building a beautiful story together.',                  x: 22, y: 8  },
+        { photo: 'assests/images/1000024621.jpg',            title: '🌲 Lost in the Mountains',    caption: 'Papa & Mumma amongst the cedar trees — even the mountains feel warmer when you two are in them.',             x: 38, y: 18 },
+        { photo: 'assests/images/IMG_20170406_125647.jpg',   title: '🐻 Never Stop Exploring',     caption: 'Papa & Mumma never stopped adventuring — showing us that life is meant to be lived fully.',                   x: 55, y: 10 },
+        { photo: 'assests/images/IMG_2034.jpg',              title: '💑 Always Together',           caption: 'Papa & Mumma — side by side through everything. Our greatest example of love.',                               x: 70, y: 20 },
+        { photo: 'assests/images/IMG_2086.jpg',              title: '🌳 Treehouse View',            caption: 'Papa & Mumma still exploring, still adventuring — making every place feel like a fairytale.',                 x: 85, y: 12 },
+        { photo: 'assests/images/20240627_144423.jpg',       title: '🤗 Our Little World',          caption: 'All four of us squeezed together — this is our favourite place in the entire world.',                        x: 12, y: 38 },
+        { photo: 'assests/images/20240826_221533.jpg',       title: '🎂 Celebrating You',           caption: 'Every time there is a cake and all of us around it, it is a perfect day.',                                   x: 28, y: 46 },
+        { photo: 'assests/images/20250511_210320.jpg',       title: '🌹 With Love, Always',         caption: 'Four hearts, one family — holding on to each other and to you, Papa.',                                       x: 45, y: 36 },
+        { photo: 'assests/images/1000036641.jpg',            title: '👨‍👩‍👧‍👦 The Whole Family',   caption: 'Surrounded by everyone who loves you — this is what you built, Papa. A family full of warmth.',              x: 62, y: 44 },
+        { photo: 'assests/images/20251102_133252.jpg',       title: '🙏 Golden Temple',             caption: 'A blessed day seeking peace together at one of India\'s most sacred places.',                                x: 78, y: 34 },
+        { photo: 'assests/images/20251102_155759.jpg',       title: '🌸 Wandering Together',        caption: 'Every city you visit together becomes a memory we carry in our hearts forever.',                             x: 93, y: 44 },
+        { photo: 'assests/images/IMG_1861.jpg',              title: '✈️ Up in the Clouds',          caption: 'The best flights are the ones with the people you love most.',                                               x: 7,  y: 62 },
+        { photo: 'assests/images/IMG_2049.jpg',              title: '🏔️ Mountains & Us',           caption: 'With the mountains behind us and all of us together — does life get any better than this?',                 x: 24, y: 70 },
+        { photo: 'assests/images/IMG_2050.jpg',              title: '🌼 Surrounded by Flowers',     caption: 'As warm and beautiful as the man himself — Papa in full bloom.',                                             x: 42, y: 60 },
+        { photo: 'assests/images/20251019_232313.jpg',       title: '😄 The Goofiest Papa',         caption: 'This is the Papa we love most — the one who never takes himself too seriously.',                             x: 60, y: 68 },
     ];
 
     (function initConstellation() {

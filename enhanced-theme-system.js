@@ -1,3 +1,41 @@
+// 60-second loop controller — attaches once, works across song changes
+(function setup60SecLoop() {
+  const CLIP_DURATION = 60;
+
+  function attach(audio) {
+    audio.removeEventListener('timeupdate', onTimeUpdate);
+    audio.removeEventListener('ended', onEnded);
+    audio.addEventListener('timeupdate', onTimeUpdate);
+    audio.addEventListener('ended', onEnded);
+  }
+
+  function onTimeUpdate() {
+    if (this.currentTime >= CLIP_DURATION) {
+      this.currentTime = 0;
+    }
+  }
+
+  function onEnded() {
+    this.currentTime = 0;
+    this.play().catch(() => {});
+  }
+
+  // Wait for bgMusic to exist, then attach
+  document.addEventListener('DOMContentLoaded', () => {
+    const audio = document.getElementById('bgMusic');
+    if (audio) attach(audio);
+
+    // Re-attach whenever src changes (theme switches swap the src)
+    const orig = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'src');
+    if (orig && orig.set) {
+      Object.defineProperty(audio, 'src', {
+        get() { return orig.get.call(this); },
+        set(val) { orig.set.call(this, val); this.currentTime = 0; attach(this); }
+      });
+    }
+  });
+})();
+
 // Enhanced Theme System with Gallery Swapping and Smooth Transitions
 document.addEventListener('DOMContentLoaded', () => {
   console.log("Enhanced theme system initializing...");
@@ -38,25 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="theme-preview" style="background: linear-gradient(135deg, #f72585 0%, #4361ee 100%)"></div>
         <div class="theme-label">Neon</div>
       </div>
-      <div class="theme-item" data-theme="pastel" data-category="light">
-        <div class="theme-preview" style="background: linear-gradient(135deg, #ffafcc 0%, #a2d2ff 100%)"></div>
-        <div class="theme-label">Pastel</div>
-      </div>
-      <div class="theme-item" data-theme="tropical" data-category="light vibrant">
-        <div class="theme-preview" style="background: linear-gradient(135deg, #00b4d8 0%, #02c39a 100%)"></div>
-        <div class="theme-label">Tropical</div>
-      </div>
       <div class="theme-item" data-theme="galaxy" data-category="dark vibrant">
         <div class="theme-preview" style="background: linear-gradient(135deg, #4a0072 0%, #7b2cbf 100%)"></div>
         <div class="theme-label">Galaxy</div>
-      </div>
-      <div class="theme-item" data-theme="sunset" data-category="light vibrant">
-        <div class="theme-preview" style="background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%)"></div>
-        <div class="theme-label">Sunset</div>
-      </div>
-      <div class="theme-item" data-theme="forest" data-category="light">
-        <div class="theme-preview" style="background: linear-gradient(135deg, #2d6a4f 0%, #95d5b2 100%)"></div>
-        <div class="theme-label">Forest</div>
       </div>
       <div class="theme-item" data-theme="midnight" data-category="dark">
         <div class="theme-preview" style="background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)"></div>
@@ -479,100 +501,6 @@ document.addEventListener('DOMContentLoaded', () => {
       background: linear-gradient(135deg, #f72585 0%, #4361ee 100%) !important;
     }
     
-    /* Pastel theme */
-    body.theme-pastel {
-      background: #f8edeb !important;
-      color: #774c60 !important;
-    }
-    
-    body.theme-pastel .hero-section {
-      background: linear-gradient(135deg, #f8edeb 0%, #ffc8dd 100%) !important;
-    }
-    
-    body.theme-pastel .card-front {
-      background: linear-gradient(135deg, #bde0fe 0%, #a2d2ff 100%) !important;
-    }
-    
-    body.theme-pastel .card-back {
-      background: #fff0f3 !important;
-      color: #774c60 !important;
-    }
-    
-    body.theme-pastel .section-title {
-      background: linear-gradient(135deg, #ffafcc 0%, #a2d2ff 100%) !important;
-      -webkit-background-clip: text !important;
-      -webkit-text-fill-color: transparent !important;
-    }
-    
-    body.theme-pastel .countdown-box {
-      background: #fff0f3 !important;
-    }
-    
-    body.theme-pastel .countdown-value,
-    body.theme-pastel .countdown-label {
-      color: #774c60 !important;
-    }
-    
-    body.theme-pastel .gift-section,
-    body.theme-pastel .wishes-section,
-    body.theme-pastel .cake-section,
-    body.theme-pastel .gallery-section,
-    body.theme-pastel .candle-game-section,
-    body.theme-pastel .avatar-section {
-      background: #f8edeb !important;
-    }
-    
-    body.theme-pastel .gift-box-body {
-      background: linear-gradient(135deg, #ffafcc 0%, #ffc8dd 100%) !important;
-    }
-    
-    /* Tropical theme */
-    body.theme-tropical {
-      background: #caf0f8 !important;
-      color: #03045e !important;
-    }
-    
-    body.theme-tropical .hero-section {
-      background: linear-gradient(135deg, #caf0f8 0%, #90e0ef 100%) !important;
-    }
-    
-    body.theme-tropical .card-front {
-      background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%) !important;
-    }
-    
-    body.theme-tropical .card-back {
-      background: #ade8f4 !important;
-      color: #03045e !important;
-    }
-    
-    body.theme-tropical .section-title {
-      background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%) !important;
-      -webkit-background-clip: text !important;
-      -webkit-text-fill-color: transparent !important;
-    }
-    
-    body.theme-tropical .countdown-box {
-      background: #ade8f4 !important;
-    }
-    
-    body.theme-tropical .countdown-value,
-    body.theme-tropical .countdown-label {
-      color: #03045e !important;
-    }
-    
-    body.theme-tropical .gift-section,
-    body.theme-tropical .wishes-section,
-    body.theme-tropical .cake-section,
-    body.theme-tropical .gallery-section,
-    body.theme-tropical .candle-game-section,
-    body.theme-tropical .avatar-section {
-      background: #caf0f8 !important;
-    }
-    
-    body.theme-tropical .gift-box-body {
-      background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%) !important;
-    }
-    
     /* Galaxy theme */
     body.theme-galaxy {
       background: #0a0a23 !important;
@@ -618,100 +546,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     body.theme-galaxy .gift-box-body {
       background: linear-gradient(135deg, #3c096c 0%, #7b2cbf 100%) !important;
-    }
-    
-    /* Sunset theme */
-    body.theme-sunset {
-      background: #fff4e6 !important;
-      color: #774936 !important;
-    }
-    
-    body.theme-sunset .hero-section {
-      background: linear-gradient(135deg, #fff4e6 0%, #ffe8d6 100%) !important;
-    }
-    
-    body.theme-sunset .card-front {
-      background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%) !important;
-    }
-    
-    body.theme-sunset .card-back {
-      background: #ffeed6 !important;
-      color: #774936 !important;
-    }
-    
-    body.theme-sunset .section-title {
-      background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%) !important;
-      -webkit-background-clip: text !important;
-      -webkit-text-fill-color: transparent !important;
-    }
-    
-    body.theme-sunset .countdown-box {
-      background: #ffeed6 !important;
-    }
-    
-    body.theme-sunset .countdown-value,
-    body.theme-sunset .countdown-label {
-      color: #774936 !important;
-    }
-    
-    body.theme-sunset .gift-section,
-    body.theme-sunset .wishes-section,
-    body.theme-sunset .cake-section,
-    body.theme-sunset .gallery-section,
-    body.theme-sunset .candle-game-section,
-    body.theme-sunset .avatar-section {
-      background: #fff4e6 !important;
-    }
-    
-    body.theme-sunset .gift-box-body {
-      background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%) !important;
-    }
-    
-    /* Forest theme */
-    body.theme-forest {
-      background: #f0f7f4 !important;
-      color: #2d6a4f !important;
-    }
-    
-    body.theme-forest .hero-section {
-      background: linear-gradient(135deg, #f0f7f4 0%, #d8f3dc 100%) !important;
-    }
-    
-    body.theme-forest .card-front {
-      background: linear-gradient(135deg, #2d6a4f 0%, #52b788 100%) !important;
-    }
-    
-    body.theme-forest .card-back {
-      background: #d8f3dc !important;
-      color: #2d6a4f !important;
-    }
-    
-    body.theme-forest .section-title {
-      background: linear-gradient(135deg, #2d6a4f 0%, #52b788 100%) !important;
-      -webkit-background-clip: text !important;
-      -webkit-text-fill-color: transparent !important;
-    }
-    
-    body.theme-forest .countdown-box {
-      background: #d8f3dc !important;
-    }
-    
-    body.theme-forest .countdown-value,
-    body.theme-forest .countdown-label {
-      color: #2d6a4f !important;
-    }
-    
-    body.theme-forest .gift-section,
-    body.theme-forest .wishes-section,
-    body.theme-forest .cake-section,
-    body.theme-forest .gallery-section,
-    body.theme-forest .candle-game-section,
-    body.theme-forest .avatar-section {
-      background: #f0f7f4 !important;
-    }
-    
-    body.theme-forest .gift-box-body {
-      background: linear-gradient(135deg, #2d6a4f 0%, #52b788 100%) !important;
     }
     
     /* Midnight theme */
@@ -963,20 +797,8 @@ document.addEventListener('DOMContentLoaded', () => {
       case 'neon':
         colors = ['#f72585', '#4361ee', '#4cc9f0', '#7209b7', '#3a0ca3'];
         break;
-      case 'pastel':
-        colors = ['#ffafcc', '#bde0fe', '#a2d2ff', '#cdb4db', '#ffc8dd'];
-        break;
-      case 'tropical':
-        colors = ['#00b4d8', '#0077b6', '#90e0ef', '#ade8f4', '#023e8a'];
-        break;
       case 'galaxy':
         colors = ['#7b2cbf', '#c77dff', '#e0aaff', '#9d4edd', '#240046'];
-        break;
-      case 'sunset':
-        colors = ['#ff7e5f', '#feb47b', '#ff9e7d', '#ffac91', '#ffbb93'];
-        break;
-      case 'forest':
-        colors = ['#2d6a4f', '#52b788', '#95d5b2', '#d8f3dc', '#1b4332'];
         break;
       case 'midnight':
         colors = ['#0f2027', '#203a43', '#2c5364', '#2b4160', '#356085'];
@@ -1209,11 +1031,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Remove all special theme classes
       document.body.classList.remove(
         'theme-neon',
-        'theme-pastel',
-        'theme-tropical',
         'theme-galaxy',
-        'theme-sunset',
-        'theme-forest',
         'theme-midnight',
         'theme-custom'
       );
@@ -1311,10 +1129,6 @@ document.addEventListener('DOMContentLoaded', () => {
               photo.style.filter = 'brightness(1.1) contrast(1.1)';
               wrapper.style.boxShadow = '0 0 15px rgba(247, 37, 133, 0.3)';
               break;
-            case 'pastel':
-              photo.style.filter = 'brightness(1.05) contrast(0.95)';
-              wrapper.style.boxShadow = '0 5px 15px rgba(255, 175, 204, 0.2)';
-              break;
             // Add more theme-specific subtle filters as needed
           }
         };
@@ -1340,45 +1154,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Save current playback state
     const wasPlaying = !bgMusic.paused;
-    const currentTimePercentage = bgMusic.duration ? bgMusic.currentTime / bgMusic.duration : 0;
-
-    // Store original src if not already stored
-    if (!bgMusic.dataset.originalSrc) {
-      bgMusic.dataset.originalSrc = bgMusic.src || "assets/sounds/default-theme-music.mp3";
-    }
 
     // Set new music source based on theme
     let newSrc;
     switch (theme) {
-      case 'default':
-        newSrc = bgMusic.dataset.originalSrc;
-        break;
       case 'neon':
-        newSrc = "assests/sounds/Apsara Ringtone Ringtone (DjPunjab.is).mp3";
-        break;
-      case 'pastel':
-        newSrc = "assests/sounds/happy-birthday-258264.mp3";
-        break;
-      case 'tropical':
-        newSrc = "assests/sounds/Water - Diljit Dosanjh.mp3";
+        newSrc = "assests/sounds/neon-theme-music.mp3";
         break;
       case 'galaxy':
-        newSrc = "assests/sounds/Nain - Arjan Dhillon.mp3";
-        break;
-      case 'sunset':
-        newSrc = "assests/sounds/Tareefan - DjPunjab.Com.Se.mp3";
-        break;
-      case 'forest':
-        newSrc = "assests/sounds/Ishq Di Baajiyaan - DjPunjab.Com.Se.mp3";
+        newSrc = "assests/sounds/Tu Jo Mila Bajrangi Bhaijaan 320 Kbps.mp3";
         break;
       case 'midnight':
-        newSrc = "assests/sounds/Mehrma - The Prophec.mp3";
-        break;
-      case 'custom':
-        newSrc = bgMusic.dataset.originalSrc; // Use default for custom
+        newSrc = "assests/sounds/Happy Birthday - Diljit Dosanjh.mp3";
         break;
       default:
-        newSrc = bgMusic.dataset.originalSrc;
+        newSrc = "assests/sounds/Papa Meri Jaan Animal 320 Kbps.mp3";
     }
 
     // Fade out current audio
@@ -1394,11 +1184,9 @@ document.addEventListener('DOMContentLoaded', () => {
           bgMusic.src = newSrc;
           bgMusic.volume = 0;
 
-          // When metadata loaded, set time and fade in
+          // When metadata loaded, start from 0 and fade in
           bgMusic.addEventListener('loadedmetadata', function onLoadedMetadata() {
-            if (!isNaN(bgMusic.duration)) {
-              bgMusic.currentTime = bgMusic.duration * currentTimePercentage;
-            }
+            bgMusic.currentTime = 0;
 
             bgMusic.play().then(() => {
               // Fade in
@@ -1442,11 +1230,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Remove any existing theme-specific classes
       section.classList.remove(
         'theme-neon-section',
-        'theme-pastel-section',
-        'theme-tropical-section',
         'theme-galaxy-section',
-        'theme-sunset-section',
-        'theme-forest-section',
         'theme-midnight-section',
         'theme-custom-section'
       );
@@ -1466,11 +1250,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Remove existing theme classes
       element.classList.remove(
         'theme-neon-element',
-        'theme-pastel-element',
-        'theme-tropical-element',
         'theme-galaxy-element',
-        'theme-sunset-element',
-        'theme-forest-element',
         'theme-midnight-element',
         'theme-custom-element'
       );
@@ -1503,18 +1283,6 @@ document.addEventListener('DOMContentLoaded', () => {
           break;
         case 'neon':
           createNeonEffects();
-          break;
-        case 'tropical':
-          createTropicalEffects();
-          break;
-        case 'pastel':
-          createPastelEffects();
-          break;
-        case 'sunset':
-          createSunsetEffects();
-          break;
-        case 'forest':
-          createForestEffects();
           break;
         case 'midnight':
           createMidnightEffects();
@@ -1707,558 +1475,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fade in the container
     setTimeout(() => {
       neonContainer.style.opacity = '1';
-    }, 100);
-  }
-
-  // Create enhanced tropical effects
-  function createTropicalEffects() {
-    const tropicalContainer = document.createElement('div');
-    tropicalContainer.className = 'theme-effect-element tropical-container';
-    tropicalContainer.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 1s ease;
-    `;
-
-    // Create sun
-    const sun = document.createElement('div');
-    sun.className = 'tropical-sun';
-    sun.style.cssText = `
-      position: absolute;
-      top: 10%;
-      right: 10%;
-      width: 100px;
-      height: 100px;
-      background: radial-gradient(circle, #ffdd00 30%, rgba(255, 221, 0, 0) 70%);
-      border-radius: 50%;
-      filter: blur(5px);
-      opacity: 0;
-      animation: fade-in 2s ease forwards;
-    `;
-    tropicalContainer.appendChild(sun);
-
-    // Create palm trees with staggered animation
-    const palmPositions = [
-      { bottom: 0, left: '5%', rotate: -5 },
-      { bottom: 0, left: '15%', rotate: 5 },
-      { bottom: 0, right: '5%', rotate: 5 },
-      { bottom: 0, right: '15%', rotate: -5 }
-    ];
-
-    palmPositions.forEach((pos, i) => {
-      const palm = document.createElement('div');
-      palm.className = 'palm-tree';
-
-      const positionStyle = Object.entries(pos)
-        .map(([key, value]) => `${key}: ${value}${typeof value === 'number' ? 'deg' : ''};`)
-        .join(' ');
-
-      const delay = i * 0.3;
-
-      palm.style.cssText = `
-        position: absolute;
-        ${positionStyle}
-        width: 120px;
-        height: 240px;
-        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 240"><rect x="55" y="100" width="10" height="140" fill="%23A0522D"/><path d="M60,0 C40,50 10,40 10,80 C60,70 60,70 110,80 C110,40 80,50 60,0" fill="%2300b4d8"/></svg>');
-        background-size: contain;
-        background-repeat: no-repeat;
-        transform-origin: bottom center;
-        opacity: 0;
-        animation: fade-in 1s ease forwards ${delay}s, palm-sway 8s ease-in-out infinite;
-      `;
-      tropicalContainer.appendChild(palm);
-    });
-
-    // Create ocean waves
-    const ocean = document.createElement('div');
-    ocean.className = 'tropical-ocean';
-    ocean.style.cssText = `
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 10%;
-      background: linear-gradient(0deg, #0077b6 0%, #00b4d8 100%);
-      opacity: 0;
-      animation: fade-in 2s ease forwards 0.5s;
-    `;
-
-    // Add wave mask
-    const waveMask = document.createElement('div');
-    waveMask.className = 'wave-mask';
-    waveMask.style.cssText = `
-      position: absolute;
-      top: -20px;
-      left: 0;
-      width: 100%;
-      height: 20px;
-      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 30"><path d="M0,30 C100,10 200,0 300,10 C400,20 500,30 600,20 C700,10 800,0 900,10 C1000,20 1100,30 1200,20 L1200,30 L0,30 Z" fill="%2300b4d8"/></svg>');
-      background-size: 1200px 30px;
-      background-repeat: repeat-x;
-      animation: wave-move 20s linear infinite;
-    `;
-    ocean.appendChild(waveMask);
-
-    tropicalContainer.appendChild(ocean);
-
-    // Create clouds
-    for (let i = 0; i < 5; i++) {
-      const cloud = document.createElement('div');
-      cloud.className = 'tropical-cloud';
-
-      const size = Math.random() * 100 + 50;
-      const top = Math.random() * 30 + 5;
-      const delay = i * 0.4;
-      const duration = Math.random() * 100 + 100;
-      const startPos = Math.random() * 100 - 20;
-
-      cloud.style.cssText = `
-        position: absolute;
-        width: ${size}px;
-        height: ${size * 0.6}px;
-        top: ${top}%;
-        left: ${startPos}%;
-        background: rgba(255, 255, 255, 0.8);
-        border-radius: 50px;
-        filter: blur(5px);
-        opacity: 0;
-        animation: fade-in 2s ease forwards ${delay}s, cloud-move ${duration}s linear infinite;
-      `;
-
-      // Add additional blobs to make cloud shape
-      for (let j = 0; j < 3; j++) {
-        const blob = document.createElement('div');
-        blob.style.cssText = `
-          position: absolute;
-          width: ${size * (0.3 + Math.random() * 0.3)}px;
-          height: ${size * (0.3 + Math.random() * 0.3)}px;
-          top: ${Math.random() * 20}%;
-          left: ${j * 30 + Math.random() * 10}%;
-          background: rgba(255, 255, 255, 0.8);
-          border-radius: 50%;
-          filter: blur(5px);
-        `;
-        cloud.appendChild(blob);
-      }
-
-      tropicalContainer.appendChild(cloud);
-    }
-
-    document.body.appendChild(tropicalContainer);
-
-    // Add the animation if it doesn't exist
-    if (!document.getElementById('tropical-animation')) {
-      const style = document.createElement('style');
-      style.id = 'tropical-animation';
-      style.textContent = `
-        @keyframes palm-sway {
-          0% { transform: rotate(calc(var(--rotate, 0deg) - 5deg)); }
-          50% { transform: rotate(calc(var(--rotate, 0deg) + 5deg)); }
-          100% { transform: rotate(calc(var(--rotate, 0deg) - 5deg)); }
-        }
-        
-        @keyframes wave-move {
-          0% { background-position-x: 0; }
-          100% { background-position-x: 1200px; }
-        }
-        
-        @keyframes cloud-move {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(calc(100vw + 150px)); }
-        }
-      `;
-      document.head.appendChild(style);
-    }
-
-    // Fade in
-    setTimeout(() => {
-      tropicalContainer.style.opacity = '1';
-    }, 100);
-  }
-
-  // Create enhanced pastel effects
-  function createPastelEffects() {
-    const pastelContainer = document.createElement('div');
-    pastelContainer.className = 'theme-effect-element pastel-container';
-    pastelContainer.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 1s ease;
-    `;
-
-    // Create floating bubbles with staggered animation
-    const colors = ['#ffafcc', '#bde0fe', '#a2d2ff', '#cdb4db', '#ffc8dd'];
-    for (let i = 0; i < 20; i++) {
-      const bubble = document.createElement('div');
-      bubble.className = 'pastel-bubble';
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      const size = Math.random() * 70 + 30;
-      const delay = i * 0.15;
-
-      // Random x,y movement values
-      const xMove = Math.random() * 100 - 50;
-      const yMove = Math.random() * 100 - 50;
-
-      bubble.style.cssText = `
-        position: absolute;
-        width: ${size}px;
-        height: ${size}px;
-        background: ${color};
-        border-radius: 50%;
-        top: ${Math.random() * 100}%;
-        left: ${Math.random() * 100}%;
-        opacity: 0;
-        filter: blur(${Math.random() * 3 + 1}px);
-        --x: ${xMove}px;
-        --y: ${yMove}px;
-        animation: fade-in 1s ease forwards ${delay}s, bubble-float ${Math.random() * 10 + 10}s infinite ease-in-out;
-      `;
-      pastelContainer.appendChild(bubble);
-    }
-
-    // Create soft gradient background
-    const gradientOverlay = document.createElement('div');
-    gradientOverlay.className = 'pastel-gradient-overlay';
-    gradientOverlay.style.cssText = `
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at 70% 20%, rgba(255, 175, 204, 0.2) 0%, rgba(255, 175, 204, 0) 50%),
-                  radial-gradient(circle at 30% 70%, rgba(189, 224, 254, 0.2) 0%, rgba(189, 224, 254, 0) 50%);
-      opacity: 0;
-      animation: fade-in 2s ease forwards 0.5s;
-    `;
-    pastelContainer.appendChild(gradientOverlay);
-
-    // Add rainbow
-    const rainbow = document.createElement('div');
-    rainbow.className = 'pastel-rainbow';
-    rainbow.style.cssText = `
-      position: absolute;
-      top: 20%;
-      left: 10%;
-      width: 300px;
-      height: 150px;
-      background: radial-gradient(ellipse at top, transparent 49%, #ffafcc 50%, #ffafcc 60%, #bde0fe 60%, #bde0fe 70%, #a2d2ff 70%, #a2d2ff 80%, #cdb4db 80%, #cdb4db 90%, #ffc8dd 90%, #ffc8dd 100%);
-      background-size: 300px 300px;
-      background-repeat: no-repeat;
-      opacity: 0;
-      filter: blur(3px);
-      transform: rotate(180deg);
-      animation: fade-in 3s ease forwards 1s;
-    `;
-    pastelContainer.appendChild(rainbow);
-
-    document.body.appendChild(pastelContainer);
-
-    // Fade in
-    setTimeout(() => {
-      pastelContainer.style.opacity = '1';
-    }, 100);
-  }
-
-  // Create sunset effects
-  function createSunsetEffects() {
-    const sunsetContainer = document.createElement('div');
-    sunsetContainer.className = 'theme-effect-element sunset-container';
-    sunsetContainer.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 1s ease;
-    `;
-
-    // Create sunset gradient
-    const sunsetGradient = document.createElement('div');
-    sunsetGradient.className = 'sunset-gradient';
-    sunsetGradient.style.cssText = `
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(0deg, #ff7e5f 0%, #feb47b 30%, #fff4e6 100%);
-      opacity: 0;
-      animation: fade-in 2s ease forwards;
-    `;
-    sunsetContainer.appendChild(sunsetGradient);
-
-    // Create sun
-    const sun = document.createElement('div');
-    sun.className = 'sunset-sun';
-    sun.style.cssText = `
-      position: absolute;
-      bottom: 20%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100px;
-      height: 100px;
-      background: radial-gradient(circle, #ff7e5f 30%, rgba(255, 126, 95, 0) 70%);
-      border-radius: 50%;
-      filter: blur(5px);
-      opacity: 0;
-      animation: fade-in 3s ease forwards 0.5s;
-    `;
-    sunsetContainer.appendChild(sun);
-
-    // Create mountains
-    const mountains = document.createElement('div');
-    mountains.className = 'sunset-mountains';
-    mountains.style.cssText = `
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 30%;
-      background-image: 
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 200"><path d="M0,200 L0,100 L200,150 L400,60 L600,120 L800,80 L1000,140 L1200,90 L1200,200 Z" fill="%23774936"/></svg>'),
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 200"><path d="M0,200 L0,130 L100,140 L300,100 L500,150 L700,120 L900,160 L1100,110 L1200,130 L1200,200 Z" fill="%23995744"/></svg>');
-      background-size: 100% 100%;
-      background-repeat: no-repeat;
-      opacity: 0;
-      animation: fade-in 2s ease forwards 1s;
-    `;
-    sunsetContainer.appendChild(mountains);
-
-    // Create birds
-    for (let i = 0; i < 10; i++) {
-      const bird = document.createElement('div');
-      bird.className = 'sunset-bird';
-
-      const size = Math.random() * 5 + 5;
-      const top = Math.random() * 40 + 10;
-      const left = Math.random() * 80 + 10;
-      const delay = i * 0.2 + 1.5;
-
-      bird.style.cssText = `
-        position: absolute;
-        top: ${top}%;
-        left: ${left}%;
-        width: ${size}px;
-        height: ${size / 2}px;
-        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 5"><path d="M0,2.5 Q2.5,0 5,2.5 Q7.5,0 10,2.5" stroke="%23774936" stroke-width="0.5" fill="none" /></svg>');
-        background-size: contain;
-        background-repeat: no-repeat;
-        opacity: 0;
-        animation: fade-in 1s ease forwards ${delay}s, bird-fly 20s linear infinite;
-        animation-delay: ${delay}s, ${delay + 1}s;
-      `;
-      sunsetContainer.appendChild(bird);
-    }
-
-    document.body.appendChild(sunsetContainer);
-
-    // Add the animation if it doesn't exist
-    if (!document.getElementById('sunset-animation')) {
-      const style = document.createElement('style');
-      style.id = 'sunset-animation';
-      style.textContent = `
-        @keyframes bird-fly {
-          0% { transform: translateX(0) translateY(0); }
-          25% { transform: translateX(20px) translateY(-10px); }
-          50% { transform: translateX(40px) translateY(0); }
-          75% { transform: translateX(60px) translateY(-5px); }
-          100% { transform: translateX(80px) translateY(0); }
-        }
-      `;
-      document.head.appendChild(style);
-    }
-
-    // Fade in
-    setTimeout(() => {
-      sunsetContainer.style.opacity = '1';
-    }, 100);
-  }
-
-  // Create forest effects
-  function createForestEffects() {
-    const forestContainer = document.createElement('div');
-    forestContainer.className = 'theme-effect-element forest-container';
-    forestContainer.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 1s ease;
-    `;
-
-    // Create trees
-    const treeColors = ['#2d6a4f', '#40916c', '#52b788', '#95d5b2'];
-    const treePositions = [
-      { bottom: 0, left: '5%', scale: 1.0 },
-      { bottom: 0, left: '15%', scale: 0.8 },
-      { bottom: 0, left: '25%', scale: 1.2 },
-      { bottom: 0, left: '60%', scale: 0.9 },
-      { bottom: 0, left: '75%', scale: 1.1 },
-      { bottom: 0, left: '85%', scale: 0.7 }
-    ];
-
-    treePositions.forEach((pos, i) => {
-      const tree = document.createElement('div');
-      tree.className = 'forest-tree';
-
-      const color = treeColors[Math.floor(Math.random() * treeColors.length)];
-      const positionStyle = Object.entries(pos)
-        .filter(([key]) => key !== 'scale')
-        .map(([key, value]) => `${key}: ${value};`)
-        .join(' ');
-
-      const delay = i * 0.2;
-
-      tree.style.cssText = `
-        position: absolute;
-        ${positionStyle}
-        width: 100px;
-        height: 150px;
-        transform: scale(${pos.scale});
-        transform-origin: bottom center;
-        opacity: 0;
-        animation: fade-in 1s ease forwards ${delay}s;
-      `;
-
-      // Create trunk
-      const trunk = document.createElement('div');
-      trunk.style.cssText = `
-        position: absolute;
-        bottom: 0;
-        left: 45%;
-        width: 10%;
-        height: 40%;
-        background: #6b4f2d;
-      `;
-      tree.appendChild(trunk);
-
-      // Create tree parts (triangles)
-      for (let j = 0; j < 3; j++) {
-        const treePart = document.createElement('div');
-        treePart.style.cssText = `
-          position: absolute;
-          bottom: ${30 + j * 20}%;
-          left: 20%;
-          width: 60%;
-          height: 40%;
-          background: ${color};
-          clip-path: polygon(0% 100%, 50% 0%, 100% 100%);
-        `;
-        tree.appendChild(treePart);
-      }
-
-      forestContainer.appendChild(tree);
-    });
-
-    // Create falling leaves
-    const leaves = document.createElement('div');
-    leaves.className = 'forest-leaves';
-    leaves.style.cssText = `
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    `;
-
-    for (let i = 0; i < 20; i++) {
-      const leaf = document.createElement('div');
-      leaf.className = 'forest-leaf';
-
-      const size = Math.random() * 10 + 5;
-      const color = treeColors[Math.floor(Math.random() * treeColors.length)];
-      const delay = i * 0.3 + 1;
-      const duration = Math.random() * 10 + 10;
-      const left = Math.random() * 100;
-
-      leaf.style.cssText = `
-        position: absolute;
-        top: -${size}px;
-        left: ${left}%;
-        width: ${size}px;
-        height: ${size}px;
-        background: ${color};
-        border-radius: 50% 0 50% 0;
-        transform: rotate(${Math.random() * 360}deg);
-        opacity: 0;
-        animation: fade-in 1s ease forwards ${delay}s, leaf-fall ${duration}s linear infinite;
-        animation-delay: ${delay}s, ${delay + 1}s;
-      `;
-      leaves.appendChild(leaf);
-    }
-
-    forestContainer.appendChild(leaves);
-
-    // Create subtle mist
-    const mist = document.createElement('div');
-    mist.className = 'forest-mist';
-    mist.style.cssText = `
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 20%;
-      background: linear-gradient(0deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 100%);
-      opacity: 0;
-      animation: fade-in 3s ease forwards 2s;
-    `;
-    forestContainer.appendChild(mist);
-
-    document.body.appendChild(forestContainer);
-
-    // Add the animation if it doesn't exist
-    if (!document.getElementById('forest-animation')) {
-      const style = document.createElement('style');
-      style.id = 'forest-animation';
-      style.textContent = `
-        @keyframes leaf-fall {
-          0% { 
-            top: -10px; 
-            transform: translateX(0) rotate(0deg); 
-          }
-          100% { 
-            top: 100vh; 
-            transform: translateX(100px) rotate(720deg); 
-          }
-        }
-        
-        @keyframes tree-sway {
-          0% { transform: scale(var(--scale, 1)) rotate(-1deg); }
-          50% { transform: scale(var(--scale, 1)) rotate(1deg); }
-          100% { transform: scale(var(--scale, 1)) rotate(-1deg); }
-        }
-      `;
-      document.head.appendChild(style);
-    }
-
-    // Fade in
-    setTimeout(() => {
-      forestContainer.style.opacity = '1';
-
-      // Add subtle tree movement after fade in
-      document.querySelectorAll('.forest-tree').forEach((tree) => {
-        tree.style.animation += ', tree-sway 10s ease-in-out infinite';
-      });
     }, 100);
   }
 
