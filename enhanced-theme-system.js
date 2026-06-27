@@ -1159,7 +1159,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let newSrc;
     switch (theme) {
       case 'neon':
-        newSrc = "assests/sounds/neon-theme-music.mp3";
+        newSrc = "assests/sounds/Bapu Tere Karke Amar Sandhu 320 Kbps.mp3";
         break;
       case 'galaxy':
         newSrc = "assests/sounds/Tu Jo Mila Bajrangi Bhaijaan 320 Kbps.mp3";
